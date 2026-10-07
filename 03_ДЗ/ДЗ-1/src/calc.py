@@ -178,13 +178,3 @@ if __name__ == "__main__":
     for r in RU:
         print(r)
 
-
-# ---------------- Сравнение металлоёмкости и объёма ствола под кондуктор ----------------
-import math
-COND_COMPARE = {
-    "РФ": dict(D=273.1, s=8.9, m=57.9, bit=349.2),
-    "зарубежная": dict(D=244.5, s=7.9, m=46.2, bit=311.2),
-}
-for v in COND_COMPARE.values():
-    v["mass_t"] = v["m"] * COND_DEPTH / 1000
-    v["vol_m3"] = math.pi / 4 * (v["bit"] / 1000) ** 2 * COND_DEPTH
