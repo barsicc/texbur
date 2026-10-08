@@ -93,71 +93,40 @@ def fig_pressure():
 
 
 def fig_construction():
-    fig, ax = plt.subplots(figsize=(8.2, 10))
-    # горизонтальный масштаб: мм -> условные единицы
-    k = 1.0
+    """Схема конструкции в виде, принятом на занятиях (С01, стр. 19): полуразрез."""
+    fig, ax = plt.subplots(figsize=(7.0, 8.4))
     cols = sorted(RU, key=lambda r: r["depth"])  # кондуктор, промежуточная, эксплуатационная
     cem = {c[0]: c for c in CEMENT}
-    prev_shoe = 0
-    prev_inner = None
-    for r in cols:
-        R_hole = r["db"] / 2 * k
-        R_cas = r["D"] / 2 * k
+    xs = [1.0, 2.0, 3.0]
+    x_lab = 4.6
+    ax.plot([0.4, 4.2], [0, 0], color="black", lw=2.2)
+    prev = 0
+    for i, (r, x) in enumerate(zip(cols, xs), start=1):
         top_c = cem[r["name"]][1]
-        # ствол (открытый) от башмака предыдущей колонны
-        ax.plot([-R_hole, -R_hole], [prev_shoe, r["depth"]], color="0.35", lw=1, ls="-")
-        ax.plot([R_hole, R_hole], [prev_shoe, r["depth"]], color="0.35", lw=1, ls="-")
-        ax.plot([-R_hole, R_hole], [r["depth"], r["depth"]], color="0.35", lw=0.8, ls=":")
-        # цемент: между ОК и стенкой (ниже башмака пред.) или пред. ОК (выше)
-        for side in (-1, 1):
-            # интервал в открытом стволе
-            a, b = max(top_c, prev_shoe), r["depth"]
-            if b > a:
-                x0 = side * R_cas if side < 0 else R_cas
-                w = R_hole - R_cas
-                ax.add_patch(Rectangle((-R_hole if side < 0 else R_cas, a), w, b - a,
-                                       facecolor="0.8", edgecolor="0.5", hatch="////", lw=0.3))
-            # интервал внутри предыдущей колонны
-            if prev_inner is not None and top_c < prev_shoe:
-                w = prev_inner - R_cas
-                ax.add_patch(Rectangle((-prev_inner if side < 0 else R_cas, top_c), w, prev_shoe - top_c,
-                                       facecolor="0.8", edgecolor="0.5", hatch="////", lw=0.3))
-        # колонна
-        for side in (-1, 1):
-            ax.plot([side * R_cas, side * R_cas], [0, r["depth"]], color="black", lw=2.4)
-            ax.plot([side * R_cas, side * (R_cas + 6)], [r["depth"], r["depth"]], color="black", lw=2.4)
-        prev_shoe = r["depth"]
-        prev_inner = R_cas - 6
-
-    ax.axhline(0, color="black", lw=1.5)
-    ax.axvline(0, color="0.5", lw=0.6, ls="-.")
-
-    # подписи
-    lab_x = 200
-    texts = {
-        "Кондуктор": "1 — кондуктор",
-        "Промежуточная": "2 — промежуточная колонна",
-        "Эксплуатационная": "3 — эксплуатационная колонна",
-    }
-    for r in cols:
-        top_c = cem[r["name"]][1]
-        txt = (f"{texts[r['name']]}\nØ {ru(r['D'])} мм, L = {r['depth']} м\n"
-               f"долото Ø {ru(r['db'])} мм\nцемент: {top_c}–{r['depth']} м")
-        y = r["depth"] - (120 if r["name"] != "Кондуктор" else 40)
-        ax.annotate(txt, xy=(r["D"] / 2, r["depth"] - 30), xytext=(lab_x, y), fontsize=10.5,
-                    va="center", arrowprops=dict(arrowstyle="-", lw=0.7))
-    # глубины слева
-    for d in sorted({COND_DEPTH, INTER_DEPTH, PROD_DEPTH, 500}):
-        ax.text(-205, d, f"{d} м", va="center", ha="right", fontsize=10.5)
-        ax.plot([-200, -185], [d, d], color="black", lw=0.8)
-    ax.text(-205, 25, "0 м", va="center", ha="right", fontsize=10.5)
-
-    ax.set_xlim(-260, 420)
-    ax.set_ylim(2200, -60)
+        # колонна и башмак
+        ax.plot([x, x], [0, r["depth"]], color="black", lw=2.2)
+        ax.plot([x - 0.18, x + 0.18], [r["depth"], r["depth"]], color="black", lw=2.6)
+        # цемент — штриховка слева от колонны
+        for z in range(int(top_c) + 10, int(r["depth"]) - 25, 45):
+            ax.plot([x - 0.22, x], [z + 30, z], color="black", lw=0.9)
+        # подписи D, L, H
+        ax.text(x, -45, f"D{i} = {ru(r['D'])}", ha="center", va="bottom", fontsize=11)
+        ax.text(x, r["depth"] + 35, f"L{i} = {r['depth']} м", ha="center", va="top", fontsize=11)
+        if top_c > 0:
+            ax.plot([x - 0.12, x + 0.12], [top_c, top_c], color="black", lw=1.6)
+            ax.text(x + 0.17, top_c, f"H{i} = {top_c} м", ha="left", va="center", fontsize=11)
+        # долото: стрелка справа на середину интервала бурения
+        zb = (prev + r["depth"]) / 2
+        ax.annotate("", xy=(x + 0.03, zb), xytext=(x_lab - 0.05, zb),
+                    arrowprops=dict(arrowstyle="-|>", lw=1.0, color="black"))
+        ax.text(x_lab, zb, f"d{i} = {ru(r['db'])}", ha="left", va="center", fontsize=11)
+        prev = r["depth"]
+    ax.text(0.4, 2330, "H1 = H2 = 0 (цементирование до устья)", fontsize=10.5, va="center")
+    ax.text(0.4, 2420, "Диаметры — мм; вертикальный масштаб соблюдён, горизонтальный — условный",
+            fontsize=9.5, va="center", style="italic")
+    ax.set_xlim(0.2, 5.6)
+    ax.set_ylim(2470, -120)
     ax.axis("off")
-    ax.add_patch(Rectangle((215, 2080), 20, 50, facecolor="0.8", edgecolor="0.5", hatch="////", lw=0.3))
-    ax.text(240, 2105, "цементный камень", va="center", fontsize=10)
-    ax.text(240, 2160, "горизонтальный масштаб условный", va="center", fontsize=9, style="italic")
     fig.tight_layout()
     fig.savefig(os.path.join(OUT, "рис2_схема_конструкции.png"), dpi=200)
     plt.close(fig)
