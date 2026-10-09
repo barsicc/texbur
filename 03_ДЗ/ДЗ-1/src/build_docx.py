@@ -480,3 +480,27 @@ doc.core_properties.author = STUDENT
 doc.core_properties.title = "ДЗ-1. Проектирование конструкции скважины. Вариант 7"
 doc.save(OUT)
 print("saved", OUT)
+
+
+# ---- десятичные числа в формулах: «9», «,», «81» -> одно число «9,81» без математического пробела после запятой
+def _fix_decimal_commas(path):
+    import re
+    import shutil
+    import zipfile
+    tmp_path = path + ".tmp"
+    pat = re.compile(r'<m:r>(?:<m:rPr>(?:<m:sty m:val="p"/>)?</m:rPr>)?<m:t>(\d+)</m:t></m:r>'
+                     r'<m:r><m:rPr><m:sty m:val="p"/></m:rPr><m:t>,</m:t></m:r>'
+                     r'<m:r>(?:<m:rPr>(?:<m:sty m:val="p"/>)?</m:rPr>)?<m:t>(\d+)</m:t></m:r>')
+    with zipfile.ZipFile(path) as zin, zipfile.ZipFile(tmp_path, "w", zipfile.ZIP_DEFLATED) as zout:
+        for item in zin.infolist():
+            data = zin.read(item.filename)
+            if item.filename == "word/document.xml":
+                xml = data.decode("utf-8")
+                xml, n = pat.subn(r'<m:r><m:rPr><m:nor/></m:rPr><m:t>\1,\2</m:t></m:r>', xml)
+                print("decimal commas fixed:", n)
+                data = xml.encode("utf-8")
+            zout.writestr(item, data)
+    shutil.move(tmp_path, path)
+
+
+_fix_decimal_commas(OUT)
