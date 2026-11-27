@@ -1,0 +1,60 @@
+{
+  "case": "Скважина № 1, долото 215,9 СЗ-ГАУ, образец ЛР № 4 от 26.11.2007",
+  "data_status": "Исторический учебный образец. Происхождение рейсов как промысловых наблюдений не установлено.",
+  "sources": {
+    "manual": {
+      "edition": "Балицкий В. П., Храброва О. Ю. Технологические расчеты на персональном компьютере при бурении глубоких скважин. 2-е изд., 2007.",
+      "path_from_repository_root": "Пособие редакция 2 FIN (1).pdf",
+      "sha256": "b5d02381c8c9f187381baa0115026c9b885a6966a4c296aee3802f20fc0cc43a",
+      "locations": {
+        "reference_and_limits": "с. 37, строки 5–8",
+        "economics": "с. 37, скважина 1, строки 11–14",
+        "runs": "с. 37, скважина 1, строки 17–21",
+        "printed_D": "с. 37, ячейка F30",
+        "grid": "с. 38, ячейки B35:L40",
+        "boundary": "с. 33, (4.10)",
+        "model": "с. 30–32, (4.2)–(4.9)"
+      }
+    },
+    "lecture": {
+      "path_from_repository_root": "01_Лекции/Л04-06_Режим_бурения.pdf",
+      "sha256": "9d0b0e0290b2df9fe24a6782361af5bb26a2863bf58a39fb1a64bd10faa1d882",
+      "model_pdf_page": 72,
+      "grid_pdf_page": 73
+    },
+    "acceptance": "проверка/ПРИЁМКА_ЭТАПА_1.md"
+  },
+  "units": {
+    "P_N": "Н", "n_rpm": "об/мин", "H_m": "м", "t_h": "ч", "T_h": "ч",
+    "V_m_per_h": "м/ч", "V_r_m_per_h": "м/ч",
+    "C_rub_per_m": "руб./м", "C_b_rub": "руб.", "C_h_rub_per_h": "руб./ч",
+    "t_sp_h": "ч", "t_aux_h": "ч", "exponents": "1"
+  },
+  "reference": {"P_N": 150000, "n_rpm": 60},
+  "limits": {"P_min_N": 130000, "P_max_N": 220000, "n_min_rpm": 40, "n_max_rpm": 80},
+  "economics": {"C_b_rub": 106500, "C_h_rub_per_h": 11054, "t_sp_h": 29.1, "t_aux_h": 0.9},
+  "exponents": {"p_v": 1.4, "q_v": 0.8, "p_t": 1.2, "q_t": 0.7},
+  "runs": [
+    {"id": 1, "H_m": 144, "t_h": 30},
+    {"id": 2, "H_m": 155, "t_h": 25},
+    {"id": 3, "H_m": 146, "t_h": 21},
+    {"id": 4, "H_m": 154, "t_h": 26},
+    {"id": 5, "H_m": 151, "t_h": 19}
+  ],
+  "printed_grid": {
+    "n_rpm": [40, 45, 50, 55, 60, 65, 70, 75, 80],
+    "rows": [
+      {"P_N": 130000, "printed_n_limit_rpm": 80, "C_rub_per_m": [6143.9, 5836.2, 5582.1, 5368.0, 5184.6, 5025.5, 4885.9, 4762.1, 4651.4]},
+      {"P_N": 150000, "printed_n_limit_rpm": 71, "C_rub_per_m": [5508.4, 5251.0, 5038.0, 4858.3, 4704.2, 4570.3, 4452.6, null, null]},
+      {"P_N": 170000, "printed_n_limit_rpm": 62, "C_rub_per_m": [5036.7, 4815.8, 4632.8, 4478.2, 4345.4, null, null, null, null]},
+      {"P_N": 190000, "printed_n_limit_rpm": 53, "C_rub_per_m": [4673.0, 4479.7, 4319.3, null, null, null, null, null, null]},
+      {"P_N": 200000, "printed_n_limit_rpm": 49, "C_rub_per_m": [4520.6, 4338.7, null, null, null, null, null, null, null]}
+    ]
+  },
+  "diagnostics": {
+    "printed_D": 36106.83,
+    "printed_table_regression_threshold_rub_per_m": 0.12,
+    "boundary_probe_P_N": 190000,
+    "excluded_probe": {"P_N": 200000, "n_rpm": 50}
+  }
+}
